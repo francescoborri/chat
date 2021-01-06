@@ -12,22 +12,22 @@
         <padding>
             <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
         </padding>
-      <TextField fx:id="ip" promptText="Server IP">
+      <TextField fx:id="ipAddressTextField" promptText="Server IP">
          <VBox.margin>
             <Insets bottom="10.0" />
          </VBox.margin>
       </TextField>
-      <TextField fx:id="port" promptText="Server port (default: 9090)">
+      <TextField fx:id="portTextField" promptText="Server port (default: 9090)">
          <VBox.margin>
             <Insets bottom="10.0" />
          </VBox.margin>
       </TextField>
-        <TextField fx:id="username" promptText="Username">
+        <TextField fx:id="usernameTextField" promptText="Username (leave blank if already registered)">
             <VBox.margin>
                 <Insets bottom="10.0" />
             </VBox.margin>
         </TextField>
-        <PasswordField fx:id="password" promptText="Chat password">
+        <PasswordField fx:id="passwordField" promptText="Chat password">
             <VBox.margin>
                 <Insets bottom="10.0" />
             </VBox.margin>

@@ -1,90 +1,121 @@
 package org.francescoborri.chat.server;
 
-import org.francescoborri.chat.User;
+import org.francescoborri.chat.*;
+
+import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.time.LocalDateTime;
+import java.util.Objects;
 
 public class ClientVendorThread extends Thread {
-    private final Server server;
-    private final User clientUser;
     private final Socket socket;
+    private final UserInformation userInformation;
+    private final String clientUsername;
     private final BufferedReader in;
     private final PrintWriter out;
 
-    public ClientVendorThread(String name, Server server, Socket socket, User clientUser) throws IOException {
-        super(name);
-        this.server = server;
+    public ClientVendorThread(Socket socket, UserInformation userInformation, String clientUsername) throws IOException, IllegalAccessException {
+        super(String.format("%s:%d-vendor", socket.getInetAddress().getCanonicalHostName(), socket.getPort()));
         this.socket = socket;
-        this.clientUser = clientUser;
+        this.userInformation = userInformation;
+        this.clientUsername = clientUsername;
         in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         out = new PrintWriter(socket.getOutputStream(), true);
 
-        server.broadcast(
-                clientUser.getSocketAddress(),
-                (String.format("%s joined the chat", clientUser.getName()))
+        Server.getInstance().broadcast(
+                userInformation.getInetSocketAddress(),
+                new ChatMessage(
+                        "server",
+                        String.format("%s joined the chat", clientUsername),
+                        LocalDateTime.now()
+                ).toJSON()
         );
+    }
+
+    public UserInformation getUserInformation() {
+        return userInformation;
+    }
+
+    public String getClientUsername() {
+        return clientUsername;
+    }
+
+    public InetSocketAddress getClientSocketAddress() {
+        return (InetSocketAddress) socket.getRemoteSocketAddress();
     }
 
     public void run() {
-        String last = null;
-
         try {
-            last = receive();
-        } catch (IOException ignored) {
+            String request;
+            boolean disconnect;
+
+            do {
+                request = in.readLine();
+                disconnect = manage(request);
+            } while (!disconnect);
+        } catch (IOException | IllegalAccessException ignored) {
         }
 
         try {
-            close(true);
-            if (last != null && last.equals("shutdown"))
-                server.getChatServerCommandLine().manage(last);
-        } catch (IOException ignored) {
+            close();
+        } catch (IOException | IllegalAccessException ignored) {
         }
     }
 
-    public void send(String message) {
-        out.println(message);
+    public void send(JSONObject json) {
+        out.println(json.toString());
     }
 
-    public String receive() throws IOException {
-        String request;
+    public boolean manage(String request) throws IllegalAccessException {
+        boolean disconnect;
 
-        do {
-            request = in.readLine();
-            clientUser.newRequest();
-            manage(request);
-        } while (request != null && !request.equals("exit") && !request.equals("shutdown"));
-
-        return request;
-    }
-
-    public void manage(String request) {
         if (request == null)
-            return;
+            return true;
 
-        switch (request) {
-            case "exit":
-            case "shutdown":
+        Message message = MessageFactory.getMessage(new JSONObject(request));
+
+        switch (message.getMessageType()) {
+            case CHAT_MESSAGE:
+                Server.getInstance().broadcast(userInformation.getInetSocketAddress(), message.toJSON());
+                userInformation.newMessage();
+                disconnect = false;
                 break;
+            case DISCONNECTION_MESSAGE:
+                disconnect = true;
+                break;
+            case LOGIN_MESSAGE:
             default:
-                server.broadcast(
-                        clientUser.getSocketAddress(),
-                        String.format("[%s]: %s", getName(), request)
-                );
-                break;
+                throw new IllegalStateException();
         }
+
+        return disconnect;
     }
 
-    public void close(boolean remove) throws IOException {
-        server.connectionOnClose(clientUser.getSocketAddress(), remove);
+    public void close() throws IOException, IllegalAccessException {
+        Server.getInstance().connectionOnClose(this);
         socket.shutdownOutput();
         socket.close();
-        server.broadcast(
-                clientUser.getSocketAddress(),
-                String.format("%s left the chat", clientUser.getName())
+        Server.getInstance().broadcast(
+                userInformation.getInetSocketAddress(),
+                new ChatMessage(
+                        "server",
+                        String.format("%s left the chat", clientUsername),
+                        LocalDateTime.now()
+                ).toJSON()
         );
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof ClientVendorThread)) return false;
+        ClientVendorThread that = (ClientVendorThread) o;
+        return Objects.equals(socket, that.socket) && Objects.equals(userInformation, that.userInformation);
     }
 }

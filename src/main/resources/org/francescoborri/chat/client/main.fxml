@@ -3,26 +3,35 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.francescoborri.chat.client.ui.MainController">
-    <ListView fx:id="messages" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="393.0" prefWidth="600.0" style="-fx-background-color: #eeeeee;" VBox.vgrow="ALWAYS">
-        <VBox.margin>
-            <Insets bottom="5.0" left="10.0" right="10.0" top="10.0" />
-        </VBox.margin>
-    </ListView>
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="480.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.francescoborri.chat.client.ui.MainController">
+    <MenuBar>
+        <Menu mnemonicParsing="false" text="File">
+         <MenuItem mnemonicParsing="false" text="Direct message" />
+            <MenuItem mnemonicParsing="false" text="Close" />
+        </Menu>
+    </MenuBar>
+   <ListView fx:id="messagesListView" VBox.vgrow="NEVER">
+      <VBox.margin>
+         <Insets bottom="5.0" left="10.0" right="10.0" top="10.0" />
+      </VBox.margin>
+   </ListView>
     <HBox fillHeight="false">
         <VBox.margin>
             <Insets bottom="10.0" left="10.0" right="10.0" top="5.0" />
         </VBox.margin>
-        <TextField fx:id="input" onAction="#send" promptText="Write something..." HBox.hgrow="ALWAYS">
+        <TextField fx:id="inputTextField" onAction="#send" promptText="Write something..." HBox.hgrow="ALWAYS">
             <HBox.margin>
                 <Insets right="5.0" />
             </HBox.margin>
         </TextField>
-        <Button fx:id="send" mnemonicParsing="false" onAction="#send" style="-fx-background-color: #3276e3;" text="Send" textFill="WHITE">
+        <Button fx:id="sendButton" mnemonicParsing="false" onAction="#send" style="-fx-background-color: #3276e3;" text="Send" textFill="WHITE">
             <HBox.margin>
                 <Insets left="5.0" />
             </HBox.margin>
