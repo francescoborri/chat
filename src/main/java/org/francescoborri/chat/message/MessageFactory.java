@@ -1,6 +1,5 @@
-package org.francescoborri.chat;
+package org.francescoborri.chat.message;
 
-import org.francescoborri.chat.client.OnlineUsersMessage;
 import org.json.JSONObject;
 
 public class MessageFactory {
@@ -21,7 +20,7 @@ public class MessageFactory {
                 message = new DisconnectionMessage();
                 break;
             default:
-                throw new IllegalArgumentException(String.valueOf(json.getInt("code")));
+                throw new IllegalArgumentException();
         }
 
         return message;

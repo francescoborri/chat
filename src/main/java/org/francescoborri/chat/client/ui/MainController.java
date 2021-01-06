@@ -1,18 +1,14 @@
 package org.francescoborri.chat.client.ui;
 
-
-import org.francescoborri.chat.ChatMessage;
+import org.francescoborri.chat.message.ChatMessage;
 import org.francescoborri.chat.client.App;
-import org.francescoborri.chat.client.OnlineUsersMessage;
+import org.francescoborri.chat.message.OnlineUsersMessage;
 
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.ListView;
 import javafx.application.Platform;
-import javafx.scene.control.TextField;
-import javafx.scene.control.Label;
 import javafx.scene.paint.Color;
 import javafx.scene.text.*;
+import javafx.scene.control.*;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -44,9 +40,10 @@ public class MainController {
             } catch (IOException ignored) {
             }
         });
-        App.getClient().start();
 
+        App.getClient().start();
         Platform.runLater(() -> usernameLabel.setText(String.format("Your username: %s", App.getClient().getUsername())));
+        Platform.runLater(() -> inputTextField.requestFocus());
     }
 
     public void addItem(TextFlow message) {
@@ -95,7 +92,7 @@ public class MainController {
                 usernameColor = colors.get(username);
             else {
                 do {
-                    usernameColor = Color.color(random.nextFloat(), random.nextFloat(), random.nextFloat());
+                    usernameColor = Color.color(random.nextDouble(), random.nextDouble(), random.nextDouble());
                 } while (colors.containsValue(usernameColor));
                 colors.put(username, usernameColor);
             }

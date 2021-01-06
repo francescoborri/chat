@@ -1,11 +1,12 @@
 package org.francescoborri.chat.server;
 
+import org.francescoborri.chat.message.ChatMessage;
+import org.francescoborri.chat.message.Message;
+import org.francescoborri.chat.message.MessageFactory;
+import org.francescoborri.chat.message.LoginMessage;
+import org.francescoborri.chat.message.OnlineUsersMessage;
+
 import com.google.common.hash.Hashing;
-import org.francescoborri.chat.ChatMessage;
-import org.francescoborri.chat.Message;
-import org.francescoborri.chat.MessageFactory;
-import org.francescoborri.chat.LoginMessage;
-import org.francescoborri.chat.client.OnlineUsersMessage;
 import org.json.JSONObject;
 
 import java.io.*;
@@ -19,6 +20,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 
 public class Server extends Thread {
+    public final static int DEFAULT_PORT = 9090;
     private static Server instance = null;
 
     private final ServerSocket server;
@@ -40,9 +42,15 @@ public class Server extends Thread {
         return instance;
     }
 
+    public static synchronized Server init(String password) throws IllegalAccessException, IOException {
+        if (instance != null)
+            throw new IllegalAccessException();
+        instance = new Server(DEFAULT_PORT, password);
+        return instance;
+    }
+
     private Server(int port, String password) throws IOException {
         super("chat-server");
-
         server = new ServerSocket(port);
         users = new HashMap<>();
         usernames = new HashSet<>();
@@ -73,6 +81,15 @@ public class Server extends Thread {
                 clientVendorThread.start();
 
                 updateOnlineClients();
+
+                Server.getInstance().broadcast(
+                        null,
+                        new ChatMessage(
+                                "server",
+                                String.format("%s joined the chat", clientUsername),
+                                LocalDateTime.now()
+                        ).toJSON()
+                );
             } catch (IOException | IllegalAccessException ignored) {
             }
         }

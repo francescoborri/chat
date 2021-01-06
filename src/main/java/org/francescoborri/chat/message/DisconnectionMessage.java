@@ -1,4 +1,4 @@
-package org.francescoborri.chat;
+package org.francescoborri.chat.message;
 
 import org.json.JSONObject;
 

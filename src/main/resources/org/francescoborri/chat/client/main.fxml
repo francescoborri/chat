@@ -12,17 +12,15 @@
 <VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefWidth="600.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.francescoborri.chat.client.ui.MainController">
     <HBox>
         <VBox.margin>
-            <Insets bottom="5.0"/>
+            <Insets />
         </VBox.margin>
-        <Label fx:id="usernameLabel" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308"
-               HBox.hgrow="ALWAYS"/>
+        <Label fx:id="usernameLabel" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" HBox.hgrow="ALWAYS" />
         <Circle fill="#00f811" radius="5.0" stroke="TRANSPARENT" strokeType="INSIDE" strokeWidth="0.0">
            <HBox.margin>
-               <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
+               <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
            </HBox.margin>
         </Circle>
-        <Label fx:id="onlineUsersLabel" layoutX="10.0" layoutY="10.0" maxHeight="1.7976931348623157E308"
-               maxWidth="1.7976931348623157E308"/>
+        <Label fx:id="onlineUsersLabel" layoutX="10.0" layoutY="10.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" />
     </HBox>
    <ListView fx:id="messagesListView" VBox.vgrow="NEVER">
       <VBox.margin>
@@ -45,6 +43,6 @@
         </Button>
     </HBox>
    <padding>
-      <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+      <Insets bottom="10.0" left="10.0" right="10.0" top="5.0" />
    </padding>
 </VBox>

@@ -1,6 +1,6 @@
 package org.francescoborri.chat.client.ui;
 
-import org.francescoborri.chat.LoginException;
+import org.francescoborri.chat.exception.LoginException;
 import org.francescoborri.chat.client.App;
 import org.francescoborri.chat.client.Client;
 

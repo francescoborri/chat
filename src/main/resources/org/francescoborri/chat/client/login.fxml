@@ -12,7 +12,7 @@
         <padding>
             <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
         </padding>
-      <TextField fx:id="ipAddressTextField" promptText="Server IP">
+      <TextField fx:id="ipAddressTextField" promptText="Server address">
          <VBox.margin>
             <Insets bottom="10.0" />
          </VBox.margin>
@@ -22,7 +22,7 @@
             <Insets bottom="10.0" />
          </VBox.margin>
       </TextField>
-        <TextField fx:id="usernameTextField" promptText="Username (leave blank if already registered)">
+        <TextField fx:id="usernameTextField" promptText="Username">
             <VBox.margin>
                 <Insets bottom="10.0" />
             </VBox.margin>
@@ -32,7 +32,7 @@
                 <Insets bottom="10.0" />
             </VBox.margin>
         </PasswordField>
-        <Button maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#login" text="Login">
+        <Button maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#login" style="-fx-background-color: #3276e3;" text="Login" textFill="WHITE">
             <VBox.margin>
                 <Insets />
             </VBox.margin>

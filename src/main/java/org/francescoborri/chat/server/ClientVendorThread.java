@@ -1,7 +1,7 @@
 package org.francescoborri.chat.server;
 
-import org.francescoborri.chat.*;
-
+import org.francescoborri.chat.message.Message;
+import org.francescoborri.chat.message.MessageFactory;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
@@ -10,7 +10,6 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.InetSocketAddress;
 import java.net.Socket;
-import java.time.LocalDateTime;
 import java.util.Objects;
 
 public class ClientVendorThread extends Thread {
@@ -27,15 +26,6 @@ public class ClientVendorThread extends Thread {
         this.clientUsername = clientUsername;
         in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         out = new PrintWriter(socket.getOutputStream(), true);
-
-        Server.getInstance().broadcast(
-                userInformation.getInetSocketAddress(),
-                new ChatMessage(
-                        "server",
-                        String.format("%s joined the chat", clientUsername),
-                        LocalDateTime.now()
-                ).toJSON()
-        );
     }
 
     public String getClientUsername() {
@@ -82,6 +72,7 @@ public class ClientVendorThread extends Thread {
                 disconnect = true;
                 break;
             case LOGIN_MESSAGE:
+            case ONLINE_USERS_MESSAGE:
             default:
                 throw new IllegalStateException();
         }

@@ -1,7 +1,5 @@
-package org.francescoborri.chat.client;
+package org.francescoborri.chat.message;
 
-import org.francescoborri.chat.Message;
-import org.francescoborri.chat.MessageType;
 import org.json.JSONObject;
 
 public class OnlineUsersMessage implements Message {

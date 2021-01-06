@@ -1,4 +1,4 @@
-package org.francescoborri.chat;
+package org.francescoborri.chat.message;
 
 public enum MessageType {
     LOGIN_MESSAGE(0),

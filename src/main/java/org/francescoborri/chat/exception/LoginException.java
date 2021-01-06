@@ -1,4 +1,4 @@
-package org.francescoborri.chat;
+package org.francescoborri.chat.exception;
 
 public class LoginException extends Exception {
     public LoginException() {

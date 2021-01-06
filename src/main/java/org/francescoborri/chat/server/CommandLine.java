@@ -22,23 +22,24 @@ public class CommandLine extends Thread {
 
     public void run() {
         try {
-            String cmd;
             boolean end;
 
             do {
-                System.out.printf("[%s]: ", getPrefix());
-                cmd = scanner.nextLine();
-                end = manage(cmd);
+                System.out.printf("[%s] ", getPrefix());
+                end = manage(scanner.nextLine());
             } while (!end && !Thread.interrupted());
         } catch (IOException | IllegalAccessException ignored) {
         }
     }
 
-    public boolean manage(String cmd) throws IOException, IllegalAccessException {
+    public boolean manage(String command) throws IOException, IllegalAccessException {
         boolean end = false;
-
         System.out.print("\r");
-        switch (cmd) {
+
+        if (command.isBlank() || command.isEmpty())
+            return false;
+
+        switch (command) {
             case "shutdown":
                 end = true;
                 Server.getInstance().close();
@@ -48,6 +49,9 @@ public class CommandLine extends Thread {
                 break;
             case "online":
                 online();
+                break;
+            default:
+                System.out.println("Unknown command");
                 break;
         }
 

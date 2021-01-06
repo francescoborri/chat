@@ -1,9 +1,9 @@
 package org.francescoborri.chat.client;
 
-import com.google.common.hash.Hashing;
-import org.francescoborri.chat.*;
 import org.francescoborri.chat.client.ui.MainController;
+import org.francescoborri.chat.message.*;
 
+import com.google.common.hash.Hashing;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
@@ -14,6 +14,8 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
+
+import javafx.application.Platform;
 
 public class Client extends Thread {
     public final static int DEFAULT_PORT = 9090;
@@ -44,6 +46,9 @@ public class Client extends Thread {
     @Override
     public void run() {
         MainController ui;
+        String received;
+        Message message;
+
         if (App.getStage().getUserData() != null)
             ui = (MainController) App.getStage().getUserData();
         else
@@ -51,7 +56,12 @@ public class Client extends Thread {
 
         try {
             while (!this.isInterrupted()) {
-                Message message = MessageFactory.getMessage(new JSONObject(receive()));
+                received = receive();
+
+                if (received == null)
+                    break;
+
+                message = MessageFactory.getMessage(new JSONObject(received));
 
                 switch (message.getMessageType()) {
                     case CHAT_MESSAGE:
@@ -83,6 +93,7 @@ public class Client extends Thread {
         send(new DisconnectionMessage().toJSON());
         socket.shutdownOutput();
         socket.close();
+        Platform.runLater(() -> App.getStage().close());
     }
 
     public ChatMessage send(String message) {

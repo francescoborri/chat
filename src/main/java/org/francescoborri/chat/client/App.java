@@ -1,6 +1,6 @@
 package org.francescoborri.chat.client;
 
-import org.francescoborri.chat.LoginException;
+import org.francescoborri.chat.exception.LoginException;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -12,10 +12,12 @@ import java.io.IOException;
 public class App extends Application {
     private static Stage stage = null;
     private static Client client = null;
+    public static Thread applicationThread = null;
 
     @Override
     public void start(Stage stage) throws IOException {
         App.stage = stage;
+        App.applicationThread = Thread.currentThread();
         load("login.fxml");
     }
 
