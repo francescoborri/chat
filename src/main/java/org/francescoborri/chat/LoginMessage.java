@@ -6,6 +6,7 @@ import java.util.Objects;
 
 public class LoginMessage implements Message {
     private static final MessageType messageType = MessageType.LOGIN_MESSAGE;
+
     private final String data;
 
     public LoginMessage(JSONObject json) {

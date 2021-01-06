@@ -1,6 +1,6 @@
 package org.francescoborri.chat.client.ui;
 
-import org.francescoborri.chat.UsernameException;
+import org.francescoborri.chat.LoginException;
 import org.francescoborri.chat.client.App;
 import org.francescoborri.chat.client.Client;
 
@@ -16,21 +16,24 @@ public class LoginController {
     public TextField ipAddressTextField;
     public TextField portTextField;
     public TextField usernameTextField;
-    public PasswordField passwordField;
+    public PasswordField passwordTextField;
 
     public void login() {
         try {
             if (portTextField.getText().isBlank())
                 portTextField.setText(String.valueOf(Client.DEFAULT_PORT));
 
-            if (!ipAddressTextField.getText().isBlank() && StringUtils.isNumeric(portTextField.getText()))
-                App.login(ipAddressTextField.getText(), Integer.parseInt(portTextField.getText()), usernameTextField.getText());
+            if (!ipAddressTextField.getText().isBlank() &&
+                    !usernameTextField.getText().isBlank() &&
+                    !passwordTextField.getText().isBlank() &&
+                    StringUtils.isNumeric(portTextField.getText()))
+                App.login(ipAddressTextField.getText(), Integer.parseInt(portTextField.getText()), usernameTextField.getText(), passwordTextField.getText());
             else
                 alert("Fill in all the required fields.");
-        } catch (UsernameException exception) {
-            alert("The username is already taken.");
+        } catch (LoginException exception) {
+            alert("The username is already taken or the password is wrong.");
         } catch (IOException ignored) {
-            alert("Something went wrong...");
+            alert("Something went wrong with the login.");
         }
     }
 

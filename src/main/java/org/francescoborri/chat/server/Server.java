@@ -1,14 +1,19 @@
 package org.francescoborri.chat.server;
 
+import com.google.common.hash.Hashing;
+import org.francescoborri.chat.ChatMessage;
 import org.francescoborri.chat.Message;
 import org.francescoborri.chat.MessageFactory;
 import org.francescoborri.chat.LoginMessage;
+import org.francescoborri.chat.client.OnlineUsersMessage;
 import org.json.JSONObject;
 
 import java.io.*;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -42,7 +47,7 @@ public class Server extends Thread {
         users = new HashMap<>();
         usernames = new HashSet<>();
         aliveConnections = new ArrayList<>();
-        this.password = password;
+        this.password = Hashing.sha256().hashString(password, StandardCharsets.UTF_8).toString();
     }
 
     @Override
@@ -63,9 +68,11 @@ public class Server extends Thread {
 
                 InetSocketAddress address = (InetSocketAddress) socket.getRemoteSocketAddress();
                 ClientVendorThread clientVendorThread = new ClientVendorThread(socket, users.get(address), clientUsername);
+                aliveConnections.add(clientVendorThread);
+                usernames.add(clientUsername);
                 clientVendorThread.start();
 
-                aliveConnections.add(clientVendorThread);
+                updateOnlineClients();
             } catch (IOException | IllegalAccessException ignored) {
             }
         }
@@ -89,12 +96,14 @@ public class Server extends Thread {
         PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
 
         Message reply;
-        String clientUsername;
+        String clientUsername, serverPassword;
         Message message = MessageFactory.getMessage(new JSONObject(in.readLine()));
 
         switch (message.getMessageType()) {
             case LOGIN_MESSAGE:
-                clientUsername = ((LoginMessage) message).getData();
+                String[] data = ((LoginMessage) message).getData().split("@");
+                clientUsername = data[0];
+                serverPassword = data[1];
                 break;
             case CHAT_MESSAGE:
             case DISCONNECTION_MESSAGE:
@@ -102,17 +111,16 @@ public class Server extends Thread {
                 throw new IllegalStateException();
         }
 
-        if (users.get(inetSocketAddress) != null) {
-            reply = LoginMessage.accept();
-        } else if (Server.getInstance().usernameUnavailable(clientUsername)) {
+        if (!serverPassword.equals(password) || Server.getInstance().usernameUnavailable(clientUsername)) {
             reply = LoginMessage.deny();
             clientUsername = null;
-        } else {
+        } else if (users.get(inetSocketAddress) != null)
+            reply = LoginMessage.accept();
+        else {
             reply = LoginMessage.accept();
             Server.getInstance().addUser(new UserInformation(inetSocketAddress));
         }
 
-        usernames.add(clientUsername);
         out.println(reply.toJSON().toString());
         return clientUsername;
     }
@@ -123,16 +131,27 @@ public class Server extends Thread {
 
     public void broadcast(InetSocketAddress source, JSONObject message) {
         for (ClientVendorThread clientVendorThread : aliveConnections) {
-            if (clientVendorThread.getClientSocketAddress().equals(source))
+            if (source != null && clientVendorThread.getClientSocketAddress().equals(source))
                 continue;
 
             clientVendorThread.send(message);
         }
     }
 
-    public void connectionOnClose(ClientVendorThread clientVendorThread) {
+    public void connectionOnClose(ClientVendorThread clientVendorThread) throws IllegalAccessException {
         aliveConnections.remove(clientVendorThread);
         usernames.remove(clientVendorThread.getClientUsername());
+
+        updateOnlineClients();
+        Server.getInstance().broadcast(null, new ChatMessage(
+                "server",
+                String.format("%s left the chat", clientVendorThread.getClientUsername()),
+                LocalDateTime.now()).toJSON()
+        );
+    }
+
+    public void updateOnlineClients() throws IllegalAccessException {
+        Server.getInstance().broadcast(null, new OnlineUsersMessage(aliveConnections.size()).toJSON());
     }
 
     public void close() throws IOException, IllegalAccessException {

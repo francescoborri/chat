@@ -3,7 +3,8 @@ package org.francescoborri.chat;
 public enum MessageType {
     LOGIN_MESSAGE(0),
     CHAT_MESSAGE(1),
-    DISCONNECTION_MESSAGE(2);
+    ONLINE_USERS_MESSAGE(2),
+    DISCONNECTION_MESSAGE(3);
 
     private final int code;
 
@@ -26,6 +27,9 @@ public enum MessageType {
                 messageType = CHAT_MESSAGE;
                 break;
             case 2:
+                messageType = ONLINE_USERS_MESSAGE;
+                break;
+            case 3:
                 messageType = DISCONNECTION_MESSAGE;
                 break;
             default:

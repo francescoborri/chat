@@ -27,7 +27,7 @@
                 <Insets bottom="10.0" />
             </VBox.margin>
         </TextField>
-        <PasswordField fx:id="passwordField" promptText="Chat password">
+        <PasswordField fx:id="passwordTextField" promptText="Chat password">
             <VBox.margin>
                 <Insets bottom="10.0" />
             </VBox.margin>

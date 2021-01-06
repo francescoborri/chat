@@ -38,10 +38,6 @@ public class ClientVendorThread extends Thread {
         );
     }
 
-    public UserInformation getUserInformation() {
-        return userInformation;
-    }
-
     public String getClientUsername() {
         return clientUsername;
     }
@@ -52,13 +48,9 @@ public class ClientVendorThread extends Thread {
 
     public void run() {
         try {
-            String request;
             boolean disconnect;
-
-            do {
-                request = in.readLine();
-                disconnect = manage(request);
-            } while (!disconnect);
+            do disconnect = manage(in.readLine());
+            while (!disconnect);
         } catch (IOException | IllegalAccessException ignored) {
         }
 
@@ -101,14 +93,6 @@ public class ClientVendorThread extends Thread {
         Server.getInstance().connectionOnClose(this);
         socket.shutdownOutput();
         socket.close();
-        Server.getInstance().broadcast(
-                userInformation.getInetSocketAddress(),
-                new ChatMessage(
-                        "server",
-                        String.format("%s left the chat", clientUsername),
-                        LocalDateTime.now()
-                ).toJSON()
-        );
     }
 
     @Override

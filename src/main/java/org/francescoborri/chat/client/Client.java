@@ -1,5 +1,6 @@
 package org.francescoborri.chat.client;
 
+import com.google.common.hash.Hashing;
 import org.francescoborri.chat.*;
 import org.francescoborri.chat.client.ui.MainController;
 
@@ -11,6 +12,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 
 public class Client extends Thread {
@@ -30,11 +32,16 @@ public class Client extends Thread {
         this.username = username;
     }
 
-    public boolean connect() throws IOException {
-        send(new LoginMessage(username).toJSON());
+    public String getUsername() {
+        return username;
+    }
+
+    public boolean connect(String password) throws IOException {
+        send(new LoginMessage(String.format("%s@%s", username, Hashing.sha256().hashString(password, StandardCharsets.UTF_8))).toJSON());
         return new LoginMessage(new JSONObject(receive())).equals(LoginMessage.accept());
     }
 
+    @Override
     public void run() {
         MainController ui;
         if (App.getStage().getUserData() != null)
@@ -50,7 +57,11 @@ public class Client extends Thread {
                     case CHAT_MESSAGE:
                         ui.receive((ChatMessage) message);
                         break;
+                    case ONLINE_USERS_MESSAGE:
+                        ui.updateOnlineUsers((OnlineUsersMessage) message);
+                        break;
                     case DISCONNECTION_MESSAGE:
+                        interrupt();
                         break;
                     case LOGIN_MESSAGE:
                     default:
@@ -72,8 +83,6 @@ public class Client extends Thread {
         send(new DisconnectionMessage().toJSON());
         socket.shutdownOutput();
         socket.close();
-
-        App.getStage().close();
     }
 
     public ChatMessage send(String message) {
@@ -89,7 +98,7 @@ public class Client extends Thread {
     public String receive() throws IOException {
         String received = in.readLine();
         if (received == null)
-            throw new IOException();
+            this.interrupt();
         return received;
     }
 }

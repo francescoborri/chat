@@ -1,5 +1,6 @@
 package org.francescoborri.chat;
 
+import org.francescoborri.chat.client.OnlineUsersMessage;
 import org.json.JSONObject;
 
 public class MessageFactory {
@@ -12,6 +13,9 @@ public class MessageFactory {
                 break;
             case CHAT_MESSAGE:
                 message = new ChatMessage(json);
+                break;
+            case ONLINE_USERS_MESSAGE:
+                message = new OnlineUsersMessage(json);
                 break;
             case DISCONNECTION_MESSAGE:
                 message = new DisconnectionMessage();

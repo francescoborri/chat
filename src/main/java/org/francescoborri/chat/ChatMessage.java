@@ -4,6 +4,7 @@ import org.json.JSONObject;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Objects;
 
 public class ChatMessage implements Message {
     private static final MessageType messageType = MessageType.CHAT_MESSAGE;
@@ -46,11 +47,10 @@ public class ChatMessage implements Message {
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (obj == null) return false;
-        if (getClass() != obj.getClass()) return false;
-        ChatMessage chatMessage = (ChatMessage) obj;
-        return username.equals(chatMessage.getUsername()) && data.equals(chatMessage.getData()) && dateTime.equals(chatMessage.getDateTime());
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof ChatMessage)) return false;
+        ChatMessage that = (ChatMessage) o;
+        return Objects.equals(username, that.username) && Objects.equals(data, that.data) && Objects.equals(dateTime, that.dateTime);
     }
 }

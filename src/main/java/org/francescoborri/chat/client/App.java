@@ -1,6 +1,6 @@
 package org.francescoborri.chat.client;
 
-import org.francescoborri.chat.UsernameException;
+import org.francescoborri.chat.LoginException;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -31,12 +31,12 @@ public class App extends Application {
         stage.show();
     }
 
-    public static void login(String ip, int port, String username) throws IOException, UsernameException {
+    public static void login(String ip, int port, String username, String password) throws IOException, LoginException {
         client = new Client(ip, port, username);
 
-        if (!client.connect()) {
+        if (!client.connect(password)) {
             client = null;
-            throw new UsernameException();
+            throw new LoginException();
         } else load("main.fxml");
     }
 
